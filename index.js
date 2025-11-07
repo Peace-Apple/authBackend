@@ -12,7 +12,7 @@ const app = express()
   .use(bodyParser.json())
   .use(bearerToken());
 
-app.use('/', user)
+app.use('/api', user)
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);

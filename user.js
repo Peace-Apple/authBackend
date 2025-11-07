@@ -24,14 +24,17 @@ router.post('/register', function(req, res) {
   var hashedPassword = bcrypt.hashSync(req.body.password, 8);
   const fullName = req.body.fullName;
   const email = req.body.email;
-  console.log('the body---', req.body)
 
     db.run('INSERT INTO users (fullName, email, password) VALUES (?, ?, ?)',
     [fullName, email, hashedPassword], 
     function(err) {
         if (err) return res.status(500).send("An error occurred during registration");
 
-        res.status(200).send({ status: 'ok', message: 'Registered successfully' });
+        res.status(201).send({ 
+            status: 'ok', 
+            message: 'Registered successfully', 
+            success: true 
+        });
     });
 });
 
@@ -47,10 +50,15 @@ router.post('/login', function(req, res) {
         return res.status(401).send({ auth: false, token: null });
         }
 
-        var jwt = nJwt.create({ id: user.id }, JWT_SECRET);
+        var jwt = nJwt.create({ id: user.id, email: user.email }, JWT_SECRET);
         jwt.setExpiration(new Date().getTime() + (24*60*60*1000));
 
-        res.status(200).send({ auth: true, token: jwt.compact(), success: true });
+        res.status(200).send({ 
+            auth: true, 
+            token: jwt.compact(), 
+            success: true, 
+            message: 'Login successful' 
+        });
     });
 });
 
