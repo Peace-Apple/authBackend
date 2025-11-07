@@ -1,0 +1,22 @@
+{
+  "name": "authbackend",
+  "version": "1.0.0",
+  "description": "A simple node express server that looks at authentication using JWT.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "3.0.3",
+    "body-parser": "2.2.0",
+    "cors": "2.8.5",
+    "express": "5.1.0",
+    "express-bearer-token": "3.0.0",
+    "njwt": "2.0.1",
+    "nodemon": "3.1.10",
+    "sqlite3": "5.1.7"
+  }
+}
