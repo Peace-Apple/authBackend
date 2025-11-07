@@ -6,6 +6,7 @@ const db = new sqlite3.Database(':memory:');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'auth-secret-key';
 const nJwt = require('njwt');
+const jwtAuth = require('./auth');
 
 db.serialize(() => {
   db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, fullName TEXT, email TEXT, password TEXT)', (err) => {
@@ -23,13 +24,14 @@ router.post('/register', function(req, res) {
   var hashedPassword = bcrypt.hashSync(req.body.password, 8);
   const fullName = req.body.fullName;
   const email = req.body.email;
+  console.log('the body---', req.body)
 
     db.run('INSERT INTO users (fullName, email, password) VALUES (?, ?, ?)',
     [fullName, email, hashedPassword], 
     function(err) {
         if (err) return res.status(500).send("An error occurred during registration");
 
-        res.status(200).send({ status: 'ok' });
+        res.status(200).send({ status: 'ok', message: 'Registered successfully' });
     });
 });
 
@@ -48,7 +50,21 @@ router.post('/login', function(req, res) {
         var jwt = nJwt.create({ id: user.id }, JWT_SECRET);
         jwt.setExpiration(new Date().getTime() + (24*60*60*1000));
 
-        res.status(200).send({ auth: true, token: jwt.compact() });
+        res.status(200).send({ auth: true, token: jwt.compact(), success: true });
+    });
+});
+
+router.get('/user', jwtAuth, function(req, res, next) {
+    const userId = req.userId;
+
+    db.get('SELECT * FROM users WHERE id = ?', [userId], (err, user) => {
+        if (err) {
+            return res.status(500).send("There was a problem finding the user.");
+        }
+        if (!user) {
+            return res.status(404).send("No user found.");
+        }
+        res.status(200).send({user: user, success: true});
     });
 });
 
