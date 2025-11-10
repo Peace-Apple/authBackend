@@ -50,7 +50,10 @@ router.post('/login', function(req, res) {
         return res.status(401).send({ auth: false, token: null });
         }
 
-        var jwt = nJwt.create({ id: user.id, email: user.email }, JWT_SECRET);
+        var jwt = nJwt.create({ 
+            id: user.id, 
+            email: user.email, 
+            fullName: user.fullName }, JWT_SECRET);
         jwt.setExpiration(new Date().getTime() + (24*60*60*1000));
 
         res.status(200).send({ 
@@ -65,7 +68,7 @@ router.post('/login', function(req, res) {
 router.get('/user', jwtAuth, function(req, res, next) {
     const userId = req.userId;
 
-    db.get('SELECT * FROM users WHERE id = ?', [userId], (err, user) => {
+    db.get('SELECT id, fullName, email FROM users WHERE id = ?', [userId], (err, user) => {
         if (err) {
             return res.status(500).send("There was a problem finding the user.");
         }
